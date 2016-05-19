@@ -82,7 +82,7 @@ BaseFilter = (function() {
 module.exports = BaseFilter;
 
 
-},{"./libs/object/Rect":30}],2:[function(require,module,exports){
+},{"./libs/object/Rect":28}],2:[function(require,module,exports){
 var Bg, BgDots, BgLines, BgNoise, BlurFilter, Camera, ColorCorrectionFilter, FrameBuffer, FxaaFilter, GlitchFilter, PartialDraw,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -649,7 +649,7 @@ BlurFilter = (function(superClass) {
 module.exports = BlurFilter;
 
 
-},{"./BaseFilter":1,"./libs/object/Rect":30}],8:[function(require,module,exports){
+},{"./BaseFilter":1,"./libs/object/Rect":28}],8:[function(require,module,exports){
 var Camera,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -766,7 +766,7 @@ ColorCorrectionFilter = (function(superClass) {
 module.exports = ColorCorrectionFilter;
 
 
-},{"./BaseFilter":1,"./libs/object/Rect":30}],10:[function(require,module,exports){
+},{"./BaseFilter":1,"./libs/object/Rect":28}],10:[function(require,module,exports){
 var Conf;
 
 Conf = (function() {
@@ -797,19 +797,15 @@ module.exports = Conf;
 
 
 },{}],11:[function(require,module,exports){
-var Bg, Contents, DisplayTransform,
+var Bg, Contents,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-DisplayTransform = require('./libs/display/DisplayTransform');
 
 Bg = require('./Bg');
 
 Contents = (function() {
   function Contents() {
-    this._resize = bind(this._resize, this);
     this._start = bind(this._start, this);
     this.init = bind(this.init, this);
-    this._test;
     this._bg;
   }
 
@@ -827,16 +823,6 @@ Contents = (function() {
     });
   };
 
-  Contents.prototype._resize = function(w, h) {
-    var scale;
-    scale = w / this._test.width();
-    if (this._test.height() * scale < h) {
-      scale = h / this._test.height();
-    }
-    this._test.scale(scale, scale);
-    return this._test.render();
-  };
-
   return Contents;
 
 })();
@@ -844,7 +830,7 @@ Contents = (function() {
 module.exports = Contents;
 
 
-},{"./Bg":2,"./libs/display/DisplayTransform":25}],12:[function(require,module,exports){
+},{"./Bg":2}],12:[function(require,module,exports){
 var FrameBuffer, Rect,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -888,7 +874,7 @@ FrameBuffer = (function() {
 module.exports = FrameBuffer;
 
 
-},{"./libs/object/Rect":30}],13:[function(require,module,exports){
+},{"./libs/object/Rect":28}],13:[function(require,module,exports){
 var Func,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   slice = [].slice;
@@ -1068,7 +1054,7 @@ GlitchFilter = (function(superClass) {
 module.exports = GlitchFilter;
 
 
-},{"./BaseFilter":1,"./libs/object/Rect":30}],16:[function(require,module,exports){
+},{"./BaseFilter":1,"./libs/object/Rect":28}],16:[function(require,module,exports){
 var Conf, Contents, DelayMgr, Func, GlUtils, Main, Mouse, Param, Profiler, ResizeMgr, UpdateMgr, Utils,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -1135,7 +1121,7 @@ $(window).ready((function(_this) {
 })(this));
 
 
-},{"./Conf":10,"./Contents":11,"./Func":13,"./Mouse":17,"./Param":18,"./Profiler":20,"./libs/GlUtils":22,"./libs/Utils":23,"./libs/mgr/DelayMgr":27,"./libs/mgr/ResizeMgr":28,"./libs/mgr/UpdateMgr":29}],17:[function(require,module,exports){
+},{"./Conf":10,"./Contents":11,"./Func":13,"./Mouse":17,"./Param":18,"./Profiler":20,"./libs/GlUtils":22,"./libs/Utils":23,"./libs/mgr/DelayMgr":25,"./libs/mgr/ResizeMgr":26,"./libs/mgr/UpdateMgr":27}],17:[function(require,module,exports){
 var Mouse,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -1999,407 +1985,6 @@ module.exports = Utils;
 
 
 },{}],24:[function(require,module,exports){
-var Display,
-  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-Display = (function() {
-  function Display(option) {
-    this.text = bind(this.text, this);
-    this.elm = bind(this.elm, this);
-    this.id = bind(this.id, this);
-    this.dispose = bind(this.dispose, this);
-    this._isUpdateCss = bind(this._isUpdateCss, this);
-    this.css = bind(this.css, this);
-    this.visible = bind(this.visible, this);
-    this.mask = bind(this.mask, this);
-    this.opacity = bind(this.opacity, this);
-    this.bgColor = bind(this.bgColor, this);
-    this.right = bind(this.right, this);
-    this.bottom = bind(this.bottom, this);
-    this.y = bind(this.y, this);
-    this.x = bind(this.x, this);
-    this.xy = bind(this.xy, this);
-    this.height = bind(this.height, this);
-    this.width = bind(this.width, this);
-    this.size = bind(this.size, this);
-    this.render = bind(this.render, this);
-    this.add = bind(this.add, this);
-    this.init = bind(this.init, this);
-    this._option = option || {};
-    this._id = this._option.id || "";
-    this._elm;
-    this._css = {
-      position: this._option.position || "absolute",
-      top: 0,
-      left: 0,
-      width: this._option.width || -1,
-      height: this._option.height || -1
-    };
-    this._oldCss = {};
-  }
-
-  Display.prototype.init = function() {
-    if (window.MY_DISPLAY_ID == null) {
-      window.MY_DISPLAY_ID = 0;
-    }
-    if (this._id === "") {
-      this._id = "display" + String(window.MY_DISPLAY_ID++);
-    }
-    if ($("#" + this._id).length > 0) {
-      this._elm = $("#" + this._id);
-    } else {
-      $("body").append("<div id='" + this._id + "'></div>");
-      this._elm = $("#" + this._id);
-    }
-    if (this._css.width === -1) {
-      this._css.width = this._elm.width();
-    }
-    if (this._css.height === -1) {
-      this._css.height = this._elm.height();
-    }
-    return this.render();
-  };
-
-  Display.prototype.add = function(display) {
-    return display.elm().appendTo("#" + this.id());
-  };
-
-  Display.prototype.render = function() {
-    var key, ref, results, value;
-    if (this._isUpdateCss()) {
-      this._elm.css(this._css);
-    }
-    ref = this._css;
-    results = [];
-    for (key in ref) {
-      value = ref[key];
-      results.push(this._oldCss[key] = value);
-    }
-    return results;
-  };
-
-  Display.prototype.size = function(width, height) {
-    this._css.width = width;
-    return this._css.height = height;
-  };
-
-  Display.prototype.width = function(width) {
-    if (width != null) {
-      return this._css.width = width;
-    } else {
-      return this._css.width;
-    }
-  };
-
-  Display.prototype.height = function(height) {
-    if (height != null) {
-      return this._css.height = height;
-    } else {
-      return this._css.height;
-    }
-  };
-
-  Display.prototype.xy = function(x, y) {
-    this._css.top = y;
-    return this._css.left = x;
-  };
-
-  Display.prototype.x = function(x) {
-    if (x != null) {
-      return this._css.left = x;
-    } else {
-      return this._css.left;
-    }
-  };
-
-  Display.prototype.y = function(y) {
-    if (y != null) {
-      return this._css.top = y;
-    } else {
-      return this._css.top;
-    }
-  };
-
-  Display.prototype.bottom = function() {
-    return this.y() + this.height();
-  };
-
-  Display.prototype.right = function() {
-    return this.x() + this.width();
-  };
-
-  Display.prototype.bgColor = function(color) {
-    if (color != null) {
-      return this._css.backgroundColor = color;
-    } else {
-      return this._css.backgroundColor;
-    }
-  };
-
-  Display.prototype.opacity = function(val) {
-    if (val != null) {
-      return this._css.opacity = val;
-    } else {
-      return this._css.opacity;
-    }
-  };
-
-  Display.prototype.mask = function(val) {
-    return this._css.overflow = val ? "hidden" : "visible";
-  };
-
-  Display.prototype.visible = function(bool) {
-    if (bool) {
-      return this._css.display = "block";
-    } else {
-      return this._css.display = "none";
-    }
-  };
-
-  Display.prototype.css = function() {
-    return this._css;
-  };
-
-  Display.prototype._isUpdateCss = function() {
-    var key, ref, value;
-    ref = this._css;
-    for (key in ref) {
-      value = ref[key];
-      if (value !== this._oldCss[key]) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  Display.prototype.dispose = function() {
-    var i, len;
-    if ((this._elm != null) && this._elm.length > 0) {
-      i = 0;
-      len = this._elm.queue().length;
-      while (i < len) {
-        this._elm.stop();
-        i++;
-      }
-    }
-    if (this._elm != null) {
-      this._elm.off();
-      if ((this._option.isRemove == null) || this._option.isRemove) {
-        this._elm.remove();
-      } else {
-        this._elm.removeAttr('style');
-      }
-      this._elm = null;
-    }
-    this._css = null;
-    this._option = null;
-    return this._oldCss = null;
-  };
-
-  Display.prototype.id = function() {
-    return this._id;
-  };
-
-  Display.prototype.elm = function() {
-    return this._elm;
-  };
-
-  Display.prototype.text = function(val) {
-    this._elm.css("height", "auto");
-    this._elm.html(val);
-    this.height(this._elm.height());
-    return this.render();
-  };
-
-  return Display;
-
-})();
-
-module.exports = Display;
-
-
-},{}],25:[function(require,module,exports){
-var Display, DisplayTransform,
-  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-Display = require('./Display');
-
-DisplayTransform = (function(superClass) {
-  extend(DisplayTransform, superClass);
-
-  function DisplayTransform(option) {
-    this._isUpdateTransform = bind(this._isUpdateTransform, this);
-    this.perspective = bind(this.perspective, this);
-    this.pivot = bind(this.pivot, this);
-    this.render = bind(this.render, this);
-    this.rotate = bind(this.rotate, this);
-    this.scale = bind(this.scale, this);
-    this.translate = bind(this.translate, this);
-    this.dispose = bind(this.dispose, this);
-    this.init = bind(this.init, this);
-    DisplayTransform.__super__.constructor.call(this, option);
-    this._transform = {
-      dx: 0,
-      dy: 0,
-      dz: 0,
-      scaleX: 1,
-      scaleY: 1,
-      scaleZ: 1,
-      rotX: 0,
-      rotY: 0,
-      rotZ: 0
-    };
-    this._oldTransform = {};
-  }
-
-  DisplayTransform.prototype.init = function() {
-    DisplayTransform.__super__.init.call(this);
-    return this.perspective();
-  };
-
-  DisplayTransform.prototype.dispose = function() {
-    this._oldTransform = null;
-    this._transform = null;
-    return DisplayTransform.__super__.dispose.call(this);
-  };
-
-  DisplayTransform.prototype.translate = function(x, y, z) {
-    if ((x == null) && (y == null) && (z == null)) {
-      return this._transform;
-    } else {
-      x = x || 0;
-      y = y || 0;
-      z = z || 0;
-      this._transform.dx = x;
-      this._transform.dy = y;
-      return this._transform.dz = z;
-    }
-  };
-
-  DisplayTransform.prototype.scale = function(x, y, z) {
-    if ((x == null) && (y == null) && (z == null)) {
-      return this._transform;
-    } else {
-      x = x || 1;
-      y = y || 1;
-      z = z || 1;
-      this._transform.scaleX = x;
-      this._transform.scaleY = y;
-      return this._transform.scaleZ = z;
-    }
-  };
-
-  DisplayTransform.prototype.rotate = function(x, y, z) {
-    if ((x == null) && (y == null) && (z == null)) {
-      return this._transform;
-    } else {
-      x = x || 0;
-      y = y || 0;
-      z = z || 0;
-      this._transform.rotX = x;
-      this._transform.rotY = y;
-      return this._transform.rotZ = z;
-    }
-  };
-
-  DisplayTransform.prototype.render = function() {
-    var key, ref, results, value;
-    DisplayTransform.__super__.render.call(this);
-    if (this._isUpdateTransform()) {
-      this._elm.css(this._getVendorCss("transform", this._translate3d(this._transform.dx, this._transform.dy, this._transform.dz) + " " + this._rotateX(this._transform.rotX) + " " + this._rotateY(this._transform.rotY) + " " + this._rotateZ(this._transform.rotZ) + " " + this._scale3d(this._transform.scaleX, this._transform.scaleY, this._transform.scaleZ)));
-    }
-    ref = this._transform;
-    results = [];
-    for (key in ref) {
-      value = ref[key];
-      results.push(this._oldTransform[key] = value);
-    }
-    return results;
-  };
-
-  DisplayTransform.prototype.pivot = function(val) {
-    val = val || "50% 50%";
-    return this.elm().css(this._getVendorCss("transform-origin", val));
-  };
-
-  DisplayTransform.prototype.perspective = function(val) {
-    val = val || 1500;
-    return this.elm().css(this._getVendorCss("transform-style", "preserve-3d")).css(this._getVendorCss("perspective", val));
-  };
-
-  DisplayTransform.prototype._isUpdateTransform = function() {
-    var key, ref, value;
-    ref = this._transform;
-    for (key in ref) {
-      value = ref[key];
-      if (value !== this._oldTransform[key]) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  DisplayTransform.prototype._getVendorCss = function(prop, val) {
-    var res;
-    res = {};
-    res["-webkit-" + prop] = val;
-    res["-o-" + prop] = val;
-    res["-khtml-" + prop] = val;
-    res["-ms-" + prop] = val;
-    res[prop] = val;
-    return res;
-  };
-
-  DisplayTransform.prototype._translate3d = function(x, y, z) {
-    y = y || 0;
-    z = z || 0;
-    return 'translate3d(' + x + 'px,' + y + 'px,' + z + 'px)';
-  };
-
-  DisplayTransform.prototype._rotateX = function(val) {
-    if (val === void 0) {
-      val = 0;
-    }
-    return 'rotate3d(1,0,0,' + val + 'deg)';
-  };
-
-  DisplayTransform.prototype._rotateY = function(val) {
-    if (val === void 0) {
-      val = 0;
-    }
-    return 'rotate3d(0,1,0,' + val + 'deg)';
-  };
-
-  DisplayTransform.prototype._rotateZ = function(val) {
-    if (val === void 0) {
-      val = 0;
-    }
-    return 'rotate3d(0,0,1,' + val + 'deg)';
-  };
-
-  DisplayTransform.prototype._scale3d = function(x, y, z) {
-    if (x === void 0) {
-      x = 1;
-    }
-    if (y === void 0) {
-      y = 1;
-    }
-    if (z === void 0) {
-      z = 1;
-    }
-    return 'scale3d(' + x + ',' + y + ',' + z + ')';
-  };
-
-  return DisplayTransform;
-
-})(Display);
-
-module.exports = DisplayTransform;
-
-
-},{"./Display":24}],26:[function(require,module,exports){
 var BaseMgr, Utils,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -2420,7 +2005,7 @@ BaseMgr = (function() {
 module.exports = BaseMgr;
 
 
-},{"../Utils":23}],27:[function(require,module,exports){
+},{"../Utils":23}],25:[function(require,module,exports){
 var BaseMgr, DelayMgr,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -2508,7 +2093,7 @@ DelayMgr = (function(superClass) {
 module.exports = DelayMgr;
 
 
-},{"./BaseMgr":26}],28:[function(require,module,exports){
+},{"./BaseMgr":24}],26:[function(require,module,exports){
 var BaseMgr, ResizeMgr,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -2630,7 +2215,7 @@ ResizeMgr = (function(superClass) {
 module.exports = ResizeMgr;
 
 
-},{"./BaseMgr":26}],29:[function(require,module,exports){
+},{"./BaseMgr":24}],27:[function(require,module,exports){
 var BaseMgr, UpdateMgr,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -2702,7 +2287,7 @@ UpdateMgr = (function(superClass) {
 module.exports = UpdateMgr;
 
 
-},{"./BaseMgr":26}],30:[function(require,module,exports){
+},{"./BaseMgr":24}],28:[function(require,module,exports){
 var Rect,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
